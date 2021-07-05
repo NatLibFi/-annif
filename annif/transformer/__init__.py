@@ -3,6 +3,7 @@
 import re
 from . import transformer
 from . import inputlimiter
+from . import langfilter
 from annif.util import parse_args
 from annif.exception import ConfigurationException
 
@@ -39,4 +40,5 @@ def get_transform(transform_specs, project):
 
 _transforms = {
     transformer.IdentityTransform.name: transformer.IdentityTransform,
-    inputlimiter.InputLimiter.name: inputlimiter.InputLimiter}
+    inputlimiter.InputLimiter.name: inputlimiter.InputLimiter,
+    langfilter.LangFilter.name: langfilter.LangFilter}

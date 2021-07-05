@@ -5,6 +5,7 @@ import os
 import os.path
 import tempfile
 import numpy as np
+import cld3
 from annif import logger
 from annif.suggestion import VectorSuggestionResult
 
@@ -82,6 +83,17 @@ def parse_args(param_string):
         elif len(parts) == 2:
             kwargs[parts[0]] = parts[1]
     return posargs, kwargs
+
+
+def detect_language(text):
+    """Tries to detect the language of a text input. Outputs a BCP-47-style
+    language code (e.g. 'en') and a probability for the language in a tuple."""
+
+    lan_info = cld3.get_language(text)
+    if lan_info is not None and lan_info.is_reliable:
+        return (lan_info.language, lan_info.probability)
+    else:
+        return (None, None)
 
 
 def boolean(val):

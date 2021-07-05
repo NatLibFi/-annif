@@ -109,6 +109,7 @@ def pretrained_vectors():
 def project(subject_index, datadir, registry, vocabulary):
     proj = unittest.mock.Mock()
     proj.analyzer = annif.analyzer.get_analyzer('snowball(finnish)')
+    proj.language = 'fi'
     proj.vocab = vocabulary
     proj.subjects = subject_index
     proj.datadir = str(datadir)
