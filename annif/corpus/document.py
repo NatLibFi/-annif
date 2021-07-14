@@ -90,20 +90,21 @@ class DocumentList(DocumentCorpus):
         yield from self._documents
 
 
-class TruncatingDocumentCorpus(DocumentCorpus):
-    """A document corpus that wraps another document corpus but truncates the
-    documents to a given length"""
+class TransformingDocumentCorpus(DocumentCorpus):
+    """A document corpus that wraps another document corpus but transforms the
+    documents using a given transform function"""
 
-    def __init__(self, corpus, limit):
+    def __init__(self, corpus, transform_fn):
         self._orig_corpus = corpus
-        self._limit = limit
+        self._transform_fn = transform_fn
 
     @property
     def documents(self):
         for doc in self._orig_corpus.documents:
-            yield self._create_document(text=doc.text[:self._limit],
-                                        uris=doc.uris,
-                                        labels=doc.labels)
+            yield self._create_document(
+                text=self._transform_fn(doc.text),
+                uris=doc.uris,
+                labels=doc.labels)
 
 
 class LimitingDocumentCorpus(DocumentCorpus):

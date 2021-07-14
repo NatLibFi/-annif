@@ -37,7 +37,6 @@ def test_stwfsa_default_params(project):
         'expand_ampersand_with_spaces': True,
         'expand_abbreviation_with_punctuation': True,
         'simple_english_plural_rules': False,
-        'input_limit': 0,
         'use_txt_vec': False,
     }
     actual_params = stwfsa.params

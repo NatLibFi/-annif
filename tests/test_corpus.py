@@ -3,7 +3,7 @@
 import gzip
 import numpy as np
 import annif.corpus
-from annif.corpus import TruncatingDocumentCorpus
+from annif.corpus import TransformingDocumentCorpus
 
 
 def test_subjectset_uris():
@@ -268,14 +268,17 @@ def test_combinedcorpus(tmpdir):
     assert len(list(combined.documents)) == 6
 
 
-def test_truncatingcorpus(document_corpus):
-    truncating_corpus = TruncatingDocumentCorpus(document_corpus, 3)
-    for truncated_doc, doc in zip(truncating_corpus.documents,
-                                  document_corpus.documents):
-        assert len(truncated_doc.text) == 3
-        assert truncated_doc.text == doc.text[:3]
-    # Ensure docs from TruncatingCorpus are still available after iterating
-    assert len(list(truncating_corpus.documents)) \
+def test_transformingcorpus(document_corpus):
+    def double(x): return x + x
+
+    transformed_corpus = TransformingDocumentCorpus(document_corpus, double)
+    for transf_doc, doc in zip(transformed_corpus.documents,
+                               document_corpus.documents):
+        assert transf_doc.text == doc.text + doc.text
+        assert transf_doc.uris == doc.uris
+        assert transf_doc.labels == doc.labels
+    # Ensure docs are still available after iterating
+    assert len(list(transformed_corpus.documents)) \
         == len(list(document_corpus.documents))
 
 

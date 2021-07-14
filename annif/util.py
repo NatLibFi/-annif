@@ -66,6 +66,24 @@ def parse_sources(sourcedef):
     return [(srcid, weight / totalweight) for srcid, weight in sources]
 
 
+def parse_args(param_string):
+    """Parse a string of comma separated arguments such as '42,43,key=abc' into
+    a list of positional args [42, 43] and a dict of keyword args {key: abc}"""
+
+    if not param_string:
+        return [], {}
+    posargs = []
+    kwargs = {}
+    param_strings = param_string.split(',')
+    for p_string in param_strings:
+        parts = p_string.split('=')
+        if len(parts) == 1:
+            posargs.append(p_string)
+        elif len(parts) == 2:
+            kwargs[parts[0]] = parts[1]
+    return posargs, kwargs
+
+
 def boolean(val):
     """Convert the given value to a boolean True/False value, if it isn't already.
     True values are '1', 'yes', 'true', and 'on' (case insensitive), everything

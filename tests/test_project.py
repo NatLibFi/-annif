@@ -239,6 +239,12 @@ def test_project_train_state_not_available(registry, caplog):
     assert 'Could not get train state information' in caplog.text
 
 
+def test_project_transform_text_pass_through(registry):
+    project = registry.get_project('dummy-transform')
+    assert project.transformer.transform_text(
+        'this is some text') == 'this is some text'
+
+
 def test_project_not_initialized(registry):
     project = registry.get_project('dummy-en')
     assert not project.initialized
