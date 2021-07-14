@@ -9,7 +9,7 @@ import numpy as np
 from scipy.sparse import csr_matrix, csc_matrix
 import joblib
 import lmdb
-from tensorflow.keras.layers import Input, Dense, Add, Flatten, Lambda, Dropout
+from tensorflow.keras.layers import Input, Dense, Add, Flatten, Dropout, Layer
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.utils import Sequence
 import tensorflow.keras.backend as K
@@ -75,6 +75,12 @@ class LMDBSequence(Sequence):
         return int(np.ceil(self._counter / self._batch_size))
 
 
+class MeanLayer(Layer):
+    """Custom Keras layer that calculates mean values along the 2nd axis."""
+    def call(self, inputs):
+        return K.mean(inputs, axis=2)
+
+
 class NNEnsembleBackend(
         backend.AnnifLearningBackend,
         ensemble.BaseEnsembleBackend):
@@ -113,7 +119,8 @@ class NNEnsembleBackend(
                 'model file {} not found'.format(model_filename),
                 backend_id=self.backend_id)
         self.debug('loading Keras model from {}'.format(model_filename))
-        self._model = load_model(model_filename)
+        self._model = load_model(model_filename,
+                                 custom_objects={'MeanLayer': MeanLayer})
 
     def _merge_hits_from_sources(self, hits_from_sources, params):
         score_vector = np.array([np.sqrt(hits.as_vector(subjects))
@@ -141,7 +148,7 @@ class NNEnsembleBackend(
                       kernel_initializer='zeros',
                       bias_initializer='zeros')(drop_hidden)
 
-        mean = Lambda(lambda x: K.mean(x, axis=2))(inputs)
+        mean = MeanLayer()(inputs)
 
         predictions = Add()([mean, delta])
 
